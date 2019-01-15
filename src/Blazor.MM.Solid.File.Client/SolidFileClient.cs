@@ -8,6 +8,7 @@ namespace Blazor.MM.Solid.File.Client
 	{
 		public static SessionCredentials SessionCredentials;
 		public static event Action<bool> LoginStateChanged;
+		public static event Action<string> NameChanged;
 		public static bool LoggedIn;
 
 		public static Task<string> ReadFile(string path)
@@ -50,7 +51,7 @@ namespace Blazor.MM.Solid.File.Client
 					return false;
 				}
 				SessionCredentials = Json.Deserialize<SessionCredentials>(result.ToString());
-				SessionCredentials.name = await FetchName();
+				UserName = await FetchName();
 				return true;
 			}
 			catch (Exception ex)
@@ -58,6 +59,10 @@ namespace Blazor.MM.Solid.File.Client
 				Console.WriteLine(ex);
 			}
 			return false;
+		}
+		private static string UserName
+		{
+			set { SessionCredentials.name = value; NameChanged?.Invoke(value); }
 		}
 
 		public static async Task<string> FetchName()
