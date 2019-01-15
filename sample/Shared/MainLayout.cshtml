@@ -1,0 +1,83 @@
+@inherits BlazorLayoutComponent
+@implements IDisposable
+
+<div class="cover-container d-flex h-100 p-3 mx-auto flex-column text-center">
+    <header class="masthead mb-auto">
+        <div class="row align-items-center">
+            <div class="col-12">
+                <p>
+                    <h1>
+                        Blazor/Solid File Browser -
+                    </h1>
+                    @if (IsLoggedIn)
+                    {
+                        @name
+                    }
+                </p>
+            </div>
+        </div>
+    </header>
+    <main class="inner cover rolemain">
+        @Body
+    </main>
+    <footer class="mastfoot mt-auto">
+        <div class="inner">
+            <p>
+                &copy; 2019 Mister Magoo
+                <a href="https://solid.inrupt.com/" target="_blank">Solid</a>
+                in
+                <a href="https://blazor.net/" target="_blank">Blazor</a>
+                @if (IsLoggedIn)
+                {
+                    <a href="#" onclick=@DoLogout>Logout</a>
+                }
+            </p>
+        </div>
+    </footer>
+</div>
+
+@functions {
+  [Inject] IUriHelper UriHelper { get; set; }
+
+  bool IsLoggedIn;
+  string name;
+
+  protected override async Task OnInitAsync()
+  {
+      await base.OnInitAsync();
+      SolidFileClient.LoginStateChanged += LoginChanged;
+      IsLoggedIn = SolidFileClient.LoggedIn;
+      CheckState();
+  }
+
+  void LoginChanged(bool LoggedIn)
+  {
+      Console.WriteLine($"LOGINCHANGED: {LoggedIn}");
+      IsLoggedIn = LoggedIn;
+      CheckState();
+  }
+
+  void CheckState()
+  {
+      if (!IsLoggedIn && !UriHelper.GetAbsoluteUri()
+              .Equals(UriHelper.GetBaseUri(), StringComparison.OrdinalIgnoreCase))
+      {
+          UriHelper.NavigateTo("/");
+      }
+      else
+      {
+          name = SolidFileClient.SessionCredentials?.name ?? "anonymous";
+          Console.WriteLine("NAME3:" + name);
+          StateHasChanged();
+      }
+  }
+
+  async Task DoLogout()
+  {
+      await SolidFileClient.Logout();
+  }
+  void IDisposable.Dispose()
+  {
+      SolidFileClient.LoginStateChanged -= LoginChanged;
+  }
+}

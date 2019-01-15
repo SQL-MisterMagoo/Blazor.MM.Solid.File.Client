@@ -1,0 +1,67 @@
+﻿@page "/"
+
+<h2 class="cover-heading">WELCOME</h2>
+<p class="lead">
+    Blazor/Solid File Browser is a basic sample showing how to access a
+    <b><a href="https://solid.inrupt.com/" target="_blank">Solid Pod</a></b>
+    from a
+    <b><a href="https://blazor.net/" target="_blank">Blazor</a></b>
+    application.
+</p>
+<p class="lead">
+    You will need access to a free
+    <b><a href="https://solid.inrupt.com/" target="_blank">Solid Pod</a></b>
+    to use this sample.
+</p>
+<p class="lead">
+    <button class="btn btn-primary" onclick="@DoLogin">LOGIN</button>
+</p>
+@if (HasErrors)
+{
+    <p class="alert">
+        <p>@Errors</p>
+    </p>
+}
+@functions
+{
+  [Inject] IUriHelper UriHelper { get; set; }
+  bool HasErrors;
+  string Errors;
+  bool IsLoggedIn;
+
+  protected override async Task OnInitAsync()
+  {
+      await LoginChanged();
+      if (IsLoggedIn)
+      {
+          UriHelper.NavigateTo("/browse");
+      }
+  }
+
+  async Task DoLogin()
+  {
+      await SolidFileClient.Login("");
+
+      await LoginChanged();
+
+      if (IsLoggedIn)
+      {
+          UriHelper.NavigateTo("/browse");
+      }
+      else
+      {
+          ShowError("Login failed.");
+      }
+  }
+  async Task LoginChanged()
+  {
+      IsLoggedIn = await SolidFileClient.IsLoggedIn();
+  
+  }
+  void ShowError(string error)
+  {
+      Errors = error;
+      HasErrors = true;
+      StateHasChanged();
+  }
+}

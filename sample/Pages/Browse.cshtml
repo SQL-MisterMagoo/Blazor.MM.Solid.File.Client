@@ -1,0 +1,27 @@
+﻿@page "/browse"
+
+<p class="lead">
+    Current Path: /
+</p>
+<p class="lead"><a href="#">..</a></p>
+<p class="lead">
+    <button class="btn btn-primary">New Folder</button>
+    <button class="btn btn-primary">New File</button>
+</p>
+@if (HasErrors)
+{
+    <p class="alert">
+        <p>@Errors</p>
+    </p>
+}
+@functions
+{
+  bool HasErrors;
+  string Errors;
+  void ShowError(string error)
+  {
+      Errors = error;
+      HasErrors = true;
+      StateHasChanged();
+  }
+}

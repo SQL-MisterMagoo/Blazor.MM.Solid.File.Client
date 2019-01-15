@@ -1,0 +1,80 @@
+﻿@using Microsoft.AspNetCore.Blazor.Services
+
+<div class="btn-group @MenuStyle" role="group" onclick="@OnClick" style="z-index:1000;">
+    <button id="@ButtonId" type="button" class="@ButtonClass" aria-haspopup="true" aria-expanded="false">
+        @ButtonContent
+    </button>
+    @if (Show)
+    {
+        <div class="@MenuClass" aria-labelledby="@ButtonId">
+            <CascadingValue Value=this >
+                @MenuContent
+            </CascadingValue>
+        </div>
+    }
+</div>
+
+@functions
+{
+  //--
+  [Parameter] protected string ButtonId { get; set; } = "mb" + Guid.NewGuid().ToString().Replace("-", "").Substring(20);
+  [Parameter] protected string ButtonClass { get; set; } = "btn dropdown-toggle ";
+  [Parameter] protected string MenuClass { get; set; } = "dropdown-menu show";
+  [Parameter] protected RenderFragment ButtonContent { get; set; }
+  [Parameter] protected RenderFragment MenuContent { get; set; }
+  [Parameter] protected Action<string> BtnClick { get; set; }
+  [CascadingParameter] MenuButton Parent { get; set; }
+  [Inject] IUriHelper uriHelper { get; set; }
+  //--
+  bool Show = false;
+  bool IgnoreClicks;
+  string MenuStyle;
+  protected override void OnInit()
+  {
+      base.OnInit();
+      uriHelper.OnLocationChanged += OnLocationChanged;
+      if (Parent is null)
+      {
+          MenuStyle = "";
+          ButtonClass = ButtonClass + " btn-secondary";
+      } else
+      {
+          MenuStyle = "dropright";
+          ButtonClass = ButtonClass + " btn-link dropdown-toggle-split";
+      }
+  }
+  private void OnLocationChanged(object sender, string e)
+  {
+      Show = false;
+      IgnoreClicks = false;
+      StateHasChanged();
+  }
+
+  public void PreventClicks()
+  {
+      Console.WriteLine("PreventClicks");
+      Parent?.PreventClicks();
+      IgnoreClicks = true;
+      StateHasChanged();
+  }
+  internal void OnClick(UIMouseEventArgs args)
+  {
+      Console.WriteLine($"OnClick {IgnoreClicks}");
+      if (!IgnoreClicks)
+      {
+          if (Parent is null)
+              Console.WriteLine("No parent :(");
+          Parent?.PreventClicks();
+          OnClickThis(args);
+      }
+      IgnoreClicks = false;
+  }
+
+  //--
+  void OnClickThis(UIMouseEventArgs args)
+  {
+      Console.WriteLine($"Before MenuButton {ButtonId} Click {Show}");
+      Show = !Show;
+      BtnClick?.Invoke(ButtonId);
+  }
+}
