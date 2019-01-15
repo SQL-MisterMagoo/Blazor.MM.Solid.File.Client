@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "solid-file-client@0.4.6",
+      "destination": "content",
+      "files": [
+        "dist/browser/solid-file-client.bundle.min.js"
+      ]
+    }
+  ]
+}
