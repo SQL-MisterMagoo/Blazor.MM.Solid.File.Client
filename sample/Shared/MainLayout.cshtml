@@ -9,10 +9,10 @@
                     Blazor/Solid File Browser
                 </h1>
                 <p>
-                    @(Name ?? "...")
+                    @(Name ?? "")
                 </p>
                 <p>
-                    @(SolidFileClient.SessionCredentials?.webId ?? "...")
+                    @(SolidFileClient.SessionCredentials?.webId ?? "")
                 </p>
             </div>
         </div>
@@ -37,55 +37,51 @@
 </div>
 
 @functions {
-[Inject] IUriHelper UriHelper { get; set; }
+  [Inject] IUriHelper UriHelper { get; set; }
 
-bool IsLoggedIn;
-string Name;
+  bool IsLoggedIn;
+  string Name;
 
-protected override async Task OnInitAsync()
-{
-    await base.OnInitAsync();
-    SolidFileClient.LoginStateChanged += LoginChanged;
-    SolidFileClient.NameChanged += NameChanged;
-    IsLoggedIn = SolidFileClient.LoggedIn;
-    CheckState();
-}
+  protected override async Task OnInitAsync()
+  {
+      await base.OnInitAsync();
+      SolidFileClient.LoginStateChanged += LoginChanged;
+      SolidFileClient.NameChanged += NameChanged;
+      IsLoggedIn = await SolidFileClient.IsLoggedIn();
+      CheckState();
+  }
 
-void NameChanged(string name)
-{
-    Console.WriteLine($"Got name: {name}");
-    this.Name = name;
-    StateHasChanged();
-}
+  void NameChanged(string name)
+  {
+      Console.WriteLine($"Got name: {name}");
+      this.Name = name;
+      StateHasChanged();
+  }
 
-void LoginChanged(bool LoggedIn)
-{
-    Console.WriteLine($"LOGINCHANGED: {LoggedIn}");
-    IsLoggedIn = LoggedIn;
-    CheckState();
-}
+  void LoginChanged(bool LoggedIn)
+  {
+      Console.WriteLine($"LOGINCHANGED: {LoggedIn}");
+      IsLoggedIn = LoggedIn;
+      CheckState();
+      if (!IsLoggedIn) Name = "";
+  }
 
-void CheckState()
-{
-    if (!IsLoggedIn && !UriHelper.GetAbsoluteUri()
-            .Equals(UriHelper.GetBaseUri(), StringComparison.OrdinalIgnoreCase))
-    {
-        UriHelper.NavigateTo("/");
-    }
-    else
-    {
-        Name = SolidFileClient.SessionCredentials?.name ?? "anonymous";
-        Console.WriteLine("NAME3:" + Name);
-        StateHasChanged();
-    }
-}
+  void CheckState()
+  {
+      Console.WriteLine($"CheckState: {IsLoggedIn}");
+      if (!IsLoggedIn && !UriHelper.GetAbsoluteUri()
+              .Equals(UriHelper.GetBaseUri(), StringComparison.OrdinalIgnoreCase))
+      {
+          UriHelper.NavigateTo("/");
+      }
+  }
 
-async Task DoLogout()
-{
-    await SolidFileClient.Logout();
-}
-void IDisposable.Dispose()
-{
-    SolidFileClient.LoginStateChanged -= LoginChanged;
-}
+  async Task DoLogout()
+  {
+      await SolidFileClient.Logout();
+  }
+  void IDisposable.Dispose()
+  {
+      SolidFileClient.LoginStateChanged -= LoginChanged;
+  }
 }

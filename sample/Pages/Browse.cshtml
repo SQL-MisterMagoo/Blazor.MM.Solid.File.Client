@@ -1,27 +1,101 @@
 ﻿@page "/browse"
 
-<p class="lead">
-    Current Path: /
-</p>
-<p class="lead"><a href="#">..</a></p>
-<p class="lead">
+<div class="lead flex-row text-left">
+    @for (int i = 0; i < Navigation.Count; i++)
+    {
+        int item = i;
+        if (item > 0)
+        {
+            <text>/</text>
+        }
+        if (item == Navigation.Count - 1)
+        {
+            <button class="btn btn-link px-0">@Navigation[item].Title</button>
+        }
+        else
+        {
+            <button class="btn btn-link px-0" onclick="@(e=>@Navigate(item))">@Navigation[item].Title</button>
+        }
+    }
+</div>
+@*<p class="lead">
     <button class="btn btn-primary">New Folder</button>
     <button class="btn btn-primary">New File</button>
-</p>
+</p>*@
 @if (HasErrors)
 {
     <p class="alert">
-        <p>@Errors</p>
+        @Errors
     </p>
 }
+    <div class="list-group small">
+        <li class="list-group-item list-group-item-primary d-flex justify-content-between ">
+            <div class="col text-left">Name</div>
+            <div class="col text-left">Type</div>
+            <div class="col text-right">Size</div>
+            <div class="col text-right">Modified</div>
+        </li>
+        @if (folders?.Length > 0)
+        {
+            @foreach (var folder in folders)
+            {
+                <button class="list-group-item list-group-item-warning list-group-item-action d-flex justify-content-between" onclick="@(()=>Navigate(folder))">
+                    <div class="col text-left">@folder.name</div>
+                    <div class="col text-left">@folder.type</div>
+                    <div class="col text-right"> </div>
+                    <div class="col text-right">@folder.modified</div>
+                </button>
+            }
+        }
+        @if (files?.Length > 0)
+        {
+            @foreach (var file in files)
+            {
+                <button class="list-group-item list-group-item-light list-group-item-action d-flex justify-content-between">
+                    <div class="col text-left">@file.name</div>
+                    <div class="col text-left">@file.type</div>
+                    <div class="col text-right">@file.size.ToString("N0")</div>
+                    <div class="col text-right">@file.modified</div>
+                </button>
+            }
+        }
+    </div>
 @functions
 {
-  bool HasErrors;
-  string Errors;
-  void ShowError(string error)
-  {
-      Errors = error;
-      HasErrors = true;
-      StateHasChanged();
-  }
+bool HasErrors;
+string Errors = "Ooops";
+List<(string Title, string Path)> Navigation = new List<(string Title, string Path)> { ("Home", "") };
+Folder[] folders;
+File[] files;
+
+protected override async Task OnInitAsync()
+{
+    await base.OnInitAsync();
+    await SolidFileClient.IsLoggedIn();
+    await Navigate(0);
+}
+void ShowError(string error)
+{
+    Errors = error;
+    HasErrors = true;
+    StateHasChanged();
+}
+async Task Navigate(Folder folder)
+{
+    Navigation.Add((folder.name, folder.name));
+    await ReadFolder();
+}
+async Task Navigate(int item)
+{
+    Navigation = Navigation.Take(item + 1).ToList();
+    await ReadFolder();
+}
+async Task ReadFolder()
+{
+    string path = string.Join("/", Navigation.Select(item => item.Path).ToArray());
+    Console.WriteLine($"Reading folder: {path}");
+    var folder = await SolidFileClient.ReadFolder(path);
+    folders = folder.folders;
+    files = folder.files;
+}
 }
