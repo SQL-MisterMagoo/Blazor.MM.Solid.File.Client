@@ -24,11 +24,14 @@
         <div class="inner">
             <p>
                 &copy; 2019 Mister Magoo
-                <a href="https://solid.inrupt.com/" target="_blank">Solid</a>
-                in
+                <a href="https://solid.inrupt.com/" target="_blank">Solid (Inrupt)</a>
+                |
+                <a href="https://solid.community/" target="_blank">Solid (Community)</a>
+                |
                 <a href="https://blazor.net/" target="_blank">Blazor</a>
                 @if (IsLoggedIn)
                 {
+                  <text>|</text>
                     <a href="#" onclick=@DoLogout>Logout</a>
                 }
             </p>
@@ -68,11 +71,19 @@
 
   void CheckState()
   {
-      Console.WriteLine($"CheckState: {IsLoggedIn}");
-      if (!IsLoggedIn && !UriHelper.GetAbsoluteUri()
-              .Equals(UriHelper.GetBaseUri(), StringComparison.OrdinalIgnoreCase))
+      string CurrentUrl = UriHelper.GetAbsoluteUri().TrimEnd('#');
+      bool OnHomePage = CurrentUrl.Equals(UriHelper.GetBaseUri(), StringComparison.OrdinalIgnoreCase);
+
+
+      Console.WriteLine($"CheckState: {IsLoggedIn} on {CurrentUrl}, which is{(OnHomePage ? "" : " not")} the home page : {UriHelper.GetBaseUri()}");
+
+      if (!IsLoggedIn && !OnHomePage)
       {
           UriHelper.NavigateTo("/");
+      }
+      if (IsLoggedIn && OnHomePage)
+      {
+          UriHelper.NavigateTo("/browse");
       }
   }
 

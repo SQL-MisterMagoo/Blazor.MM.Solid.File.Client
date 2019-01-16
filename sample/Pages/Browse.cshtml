@@ -63,7 +63,7 @@
 @functions
 {
 bool HasErrors;
-string Errors = "Ooops";
+string Errors = "";
 List<(string Title, string Path)> Navigation = new List<(string Title, string Path)> { ("Home", "") };
 Folder[] folders;
 File[] files;
@@ -95,7 +95,7 @@ async Task ReadFolder()
     string path = string.Join("/", Navigation.Select(item => item.Path).ToArray());
     Console.WriteLine($"Reading folder: {path}");
     var folder = await SolidFileClient.ReadFolder(path);
-    folders = folder.folders;
-    files = folder.files;
+    folders = folder?.folders;
+    files = folder?.files;
 }
 }

@@ -13,6 +13,10 @@ namespace Blazor.MM.Solid.File.Client
 
 		public static Task<SolidFolder> ReadFolder(string relativePath)
 		{
+			if (SessionCredentials is null)
+			{
+				return null;
+			}
 			Uri uri = new Uri(SessionCredentials.webId);
 			string folderPath = string.Join("/", uri.GetLeftPart(UriPartial.Authority), relativePath);
 			Console.WriteLine($"readFolder('{folderPath}')");
@@ -70,7 +74,14 @@ namespace Blazor.MM.Solid.File.Client
 		}
 		private static string UserName
 		{
-			set { SessionCredentials.name = value; NameChanged?.Invoke(value); }
+			set {
+				if (SessionCredentials is null)
+				{
+					return;
+				}
+				SessionCredentials.name = value;
+				NameChanged?.Invoke(value);
+			}
 		}
 
 		public static async Task<string> FetchName()

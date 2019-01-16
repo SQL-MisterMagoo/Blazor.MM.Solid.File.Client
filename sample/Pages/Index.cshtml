@@ -3,23 +3,35 @@
 <h2 class="cover-heading">WELCOME</h2>
 <p class="lead">
     Blazor/Solid File Browser is a basic sample showing how to access a
-    <b><a href="https://solid.inrupt.com/" target="_blank">Solid Pod</a></b>
+    <b>Solid Pod</b>
     from a
     <b><a href="https://blazor.net/" target="_blank">Blazor</a></b>
     application.
 </p>
 <p class="lead">
-    You will need access to a free
-    <b><a href="https://solid.inrupt.com/" target="_blank">Solid Pod</a></b>
-    to use this sample.
+    You will need access to a Solid Pod (
+    <b>
+        <a href="https://solid.community/" target="_blank">Community</a>
+        |
+        <a href="https://solid.inrupt.com/" target="_blank">Inrupt</a>
+    </b> ) to use this sample.
 </p>
-<p class="lead">
-    <button class="btn btn-primary" onclick="@DoLogin">LOGIN</button>
-</p>
+<div class="input-group mx-auto col-10">
+    <div class="input-group-prepend">
+        <span class="input-group-text">https://example.solid.community</span>
+    </div>
+    <input type="url" class="form-control" bind="@Webid"
+           placeholder="WebID (or leave it blank and allow pop-ups)" aria-label="WebID" aria-describedby="basic-addon2"
+           autofocus="autofocus"
+           autocomplete="on" />
+    <div class="input-group-append">
+        <button class="btn btn-primary" onclick="@DoLogin">LOGIN</button>
+    </div>
+</div>
 @if (HasErrors)
 {
     <p class="alert">
-        <p>@Errors</p>
+    <p>@Errors</p>
     </p>
 }
 @functions
@@ -28,40 +40,25 @@
   bool HasErrors;
   string Errors;
   bool IsLoggedIn;
-
-  protected override async Task OnInitAsync()
+  string Webid;
+  protected override void OnInit()
   {
-      await LoginChanged();
-      if (IsLoggedIn)
-      {
-          UriHelper.NavigateTo("/browse");
-      }
+      SolidFileClient.LoginStateChanged += LoginChanged;
   }
 
-  async Task DoLogin()
+  Task DoLogin()
   {
-      await SolidFileClient.Login("");
+      return SolidFileClient.Login(Webid);
 
-      await LoginChanged();
-
-      if (IsLoggedIn)
-      {
-          UriHelper.NavigateTo("/browse");
-      }
-      else
-      {
-          ShowError("Login failed.");
-      }
   }
-  async Task LoginChanged()
+  void LoginChanged(bool loggedin)
   {
-      IsLoggedIn = await SolidFileClient.IsLoggedIn();
-  
+      IsLoggedIn = loggedin;
+      StateHasChanged();
   }
   void ShowError(string error)
   {
       Errors = error;
       HasErrors = true;
-      StateHasChanged();
   }
 }
