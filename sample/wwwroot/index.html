@@ -7,10 +7,11 @@
     <base href="/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/cover.css" rel="stylesheet" />
+    <link href="css/loading.css" rel="stylesheet" />
 </head>
 <body class="text-center">
     <app style="width: 100%;">
-        <!--!--><!--!--><!--!--><div class="cover-container d-flex h-100 p-3 mx-auto flex-column text-center">
+        <!--!--><!--!--><!--!--><div class="cover-container d-flex h-100 p-3 mx-auto flex-column text-center loading">
             <header class="masthead ">
                 <div class="row align-items-center">
                     <div class="col-12">
@@ -47,11 +48,12 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">https://example.solid.community</span>
                     </div>
-                    <input disabled type="url" class="form-control" placeholder="WebID (or leave it blank and allow pop-ups)" aria-label="WebID" aria-describedby="basic-addon2">
+                    <input disabled type="url" class="form-control" placeholder="WebID (or blank & allow pop-ups)" aria-label="WebID" aria-describedby="basic-addon2">
                     <div class="input-group-append">
                         <button disabled class="btn btn-primary" type="button">LOADING</button>
                     </div>
                 </div>
+                <label class="my-auto ticker"></label>
             </main>
             <footer class="mastfoot mt-auto">
                 <div class="inner">

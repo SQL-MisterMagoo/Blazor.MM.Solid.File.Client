@@ -1,0 +1,85 @@
+﻿
+.ticker {
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+    align-self: center;
+}
+
+    .ticker::before {
+        content: '';
+        animation: TICKER 4s infinite;
+    }
+
+    .ticker::after {
+        content: '_';
+        animation: CURSOR 2s infinite;
+    }
+
+@keyframes CURSOR {
+    0% {
+        color: #333;
+    }
+
+    40% {
+        color: #333;
+    }
+
+    50% {
+        color: #fff;
+    }
+
+    100% {
+        color: #fff;
+    }
+}
+
+@keyframes TICKER {
+    0% {
+        content: '';
+    }
+
+    9% {
+        content: 'P';
+    }
+
+    18% {
+        content: 'PL';
+    }
+
+    27% {
+        content: 'PLE';
+    }
+
+    36% {
+        content: 'PLEA';
+    }
+
+    45% {
+        content: 'PLEAS';
+    }
+
+    54% {
+        content: 'PLEASE';
+    }
+
+    63% {
+        content: 'PLEASE ';
+    }
+
+    72% {
+        content: 'PLEASE W';
+    }
+
+    81% {
+        content: 'PLEASE WA';
+    }
+
+    90% {
+        content: 'PLEASE WAI';
+    }
+
+    99% {
+        content: 'PLEASE WAIT';
+    }
+}

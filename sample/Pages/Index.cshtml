@@ -21,7 +21,7 @@
         <span class="input-group-text">https://example.solid.community</span>
     </div>
     <input type="url" class="form-control" bind="@Webid"
-           placeholder="WebID (or leave it blank and allow pop-ups)" aria-label="WebID" aria-describedby="basic-addon2"
+           placeholder="WebID (or blank & allow pop-ups)" aria-label="WebID" aria-describedby="basic-addon2"
            autofocus="autofocus"
            autocomplete="on" />
     <div class="input-group-append">
@@ -31,7 +31,7 @@
 @if (HasErrors)
 {
     <p class="alert">
-    <p>@Errors</p>
+    @Errors
     </p>
 }
 @functions
