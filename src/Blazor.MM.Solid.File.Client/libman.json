@@ -1,13 +1,17 @@
 {
   "version": "1.0",
-  "defaultProvider": "jsdelivr",
+  "defaultProvider": "unpkg",
+  "defaultDestination": "content/js",
   "libraries": [
     {
       "library": "solid-file-client@0.4.6",
-      "destination": "content",
       "files": [
-        "dist/browser/solid-file-client.bundle.min.js"
+        "dist/*/solid-file-client.bundle.js"
       ]
+    },
+    {
+      "library": "jquery@3.2.1",
+      "files": ["dist/jquery.min.js"]
     }
   ]
 }
